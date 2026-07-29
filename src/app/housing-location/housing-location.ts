@@ -1,16 +1,18 @@
 import { Component, Input } from '@angular/core';
 import { HousinglocationInfo } from '../housinglocation';
+import { CommonModule } from '@angular/common';
+import {RouterModule} from '@angular/router';
 
 @Component({
   selector: 'app-housing-location',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, RouterModule],
   template: `
     <section class="listing">
       <img class="listing-photo" [src]="housingLocation.photo" alt="Photo of {{ housingLocation.name }}" />
       <h2 class="listing-heading">{{ housingLocation.name }}</h2>
       <p class="listing-location">{{ housingLocation.city }}, {{ housingLocation.state }}</p>
-      <a href="#">Learn More</a>
+      <a [routerLink]="['/details', housingLocation.id]">Learn More</a>
     </section>
   `,
   styles: `
@@ -33,7 +35,7 @@ import { HousinglocationInfo } from '../housinglocation';
       padding: 10px 20px 20px 20px;
     }
     .listing-location::before {
-      content: url('/public/location-pin.svg') / '';
+      content: url('/location-pin.svg') / '';
     }
     section.listing a {
       padding-left: 20px;
@@ -41,7 +43,7 @@ import { HousinglocationInfo } from '../housinglocation';
       color: var(--primary-color);
     }
     section.listing a::after {
-      content: '203A';
+      content: '→';
       margin-left: 5px;
     }
   `
