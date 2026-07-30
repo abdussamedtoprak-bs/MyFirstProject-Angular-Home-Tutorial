@@ -10,12 +10,13 @@ import { HousingService } from '../housing';
   template: `
     <section>
       <form>
-        <input type="text" placeholder="Filter by city" />
-        <button class="primary" type="button">Search</button>
+        <input type="text" placeholder="Filter by city" #filter (input)="filterResults(filter.value)" />
+        <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
       </form>
     </section>
     <section class="results">
-      @for (housingLocation of housingLocationList; track housingLocation.id) {
+      <!-- Düzeltme: 'filteredLocationList' üzerinden döngü kurduk -->
+      @for (housingLocation of filteredLocationList; track housingLocation.id) {
         <app-housing-location [housingLocation]="housingLocation" />
       }
     </section>
@@ -62,10 +63,28 @@ import { HousingService } from '../housing';
 export class Home {
   readonly baseUrl = '/';
 
+  // 1. Yeni liste değişkenini ekledik
   housingLocationList: HousinglocationInfo[] = [];
+  filteredLocationList: HousinglocationInfo[] = [];
+
   housingService = inject(HousingService);
 
   constructor() {
+    // 2. Constructor'da ikisini de doldurduk
     this.housingLocationList = this.housingService.getAllHousingLocations();
+    this.filteredLocationList = this.housingLocationList;
+  }
+
+  // 3. Filtreleme fonksiyonunu ekledik
+  filterResults(text: string) {
+    if (!text) {
+      this.filteredLocationList = this.housingLocationList;
+      return;
+    }
+
+    this.filteredLocationList = this.housingLocationList.filter(
+      (housingLocation) =>
+        housingLocation?.city.toLowerCase().includes(text.toLowerCase())
+    );
   }
 }

@@ -43,6 +43,10 @@ export class HousingService{
         this.housingLocationList = this.housingLocationList.filter(location => location.id !== id);
       }
 
+      submitApplication(firstName: string, lastName: string, email: string): void {
+        console.log(`Application submitted for ${firstName} ${lastName} with email: ${email}`);
+      }
+
     constructor() { }
 
 }
