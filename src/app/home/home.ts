@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core'; // ChangeDetectorRef eklendi
 import { HousingLocation } from '../housing-location/housing-location';
 import { HousinglocationInfo } from '../housinglocation';
-import { HousingService } from '../housing';
+import { HousingService } from '../housing'; 
 
 @Component({
   selector: 'app-home',
@@ -15,7 +15,6 @@ import { HousingService } from '../housing';
       </form>
     </section>
     <section class="results">
-      <!-- Düzeltme: 'filteredLocationList' üzerinden döngü kurduk -->
       @for (housingLocation of filteredLocationList; track housingLocation.id) {
         <app-housing-location [housingLocation]="housingLocation" />
       }
@@ -63,19 +62,23 @@ import { HousingService } from '../housing';
 export class Home {
   readonly baseUrl = '/';
 
-  // 1. Yeni liste değişkenini ekledik
   housingLocationList: HousinglocationInfo[] = [];
   filteredLocationList: HousinglocationInfo[] = [];
 
   housingService = inject(HousingService);
+  changeDetectorRef = inject(ChangeDetectorRef); // ChangeDetectorRef enjekte edildi
 
   constructor() {
-    // 2. Constructor'da ikisini de doldurduk
-    this.housingLocationList = this.housingService.getAllHousingLocations();
-    this.filteredLocationList = this.housingLocationList;
+    // Artık veriler asenkron geliyor. Gelen verileri değişkenlere atıp Angular'a haber veriyoruz.
+    this.housingService
+      .getAllHousingLocations()
+      .then((housingLocationList: HousinglocationInfo[]) => {
+        this.housingLocationList = housingLocationList;
+        this.filteredLocationList = housingLocationList;
+        this.changeDetectorRef.markForCheck(); // Ekranı güncellemesini söyle
+      });
   }
 
-  // 3. Filtreleme fonksiyonunu ekledik
   filterResults(text: string) {
     if (!text) {
       this.filteredLocationList = this.housingLocationList;
