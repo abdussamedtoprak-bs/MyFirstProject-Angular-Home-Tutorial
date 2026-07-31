@@ -1,7 +1,7 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core'; // ChangeDetectorRef eklendi
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { HousingLocation } from '../housing-location/housing-location';
 import { HousinglocationInfo } from '../housinglocation';
-import { HousingService } from '../housing'; 
+import { HousingService } from '../housing';
 
 @Component({
   selector: 'app-home',
@@ -44,38 +44,21 @@ import { HousingService } from '../housing';
       color: white;
       border-radius: 8px;
     }
-    @media (min-width: 500px) and (max-width: 768px) {
-      .results {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      input[type="text"] {
-        width: 70%;
-      }
-    }
-    @media (max-width: 499px) {
-      .results {
-        grid-template-columns: 1fr;
-      }
-    }
   `
 })
 export class Home {
-  readonly baseUrl = '/';
-
   housingLocationList: HousinglocationInfo[] = [];
   filteredLocationList: HousinglocationInfo[] = [];
-
   housingService = inject(HousingService);
-  changeDetectorRef = inject(ChangeDetectorRef); // ChangeDetectorRef enjekte edildi
+  cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    // Artık veriler asenkron geliyor. Gelen verileri değişkenlere atıp Angular'a haber veriyoruz.
     this.housingService
       .getAllHousingLocations()
-      .then((housingLocationList: HousinglocationInfo[]) => {
-        this.housingLocationList = housingLocationList;
-        this.filteredLocationList = housingLocationList;
-        this.changeDetectorRef.markForCheck(); // Ekranı güncellemesini söyle
+      .then((list: HousinglocationInfo[]) => {
+        this.housingLocationList = list;
+        this.filteredLocationList = list;
+        this.cdr.detectChanges();
       });
   }
 
@@ -84,7 +67,6 @@ export class Home {
       this.filteredLocationList = this.housingLocationList;
       return;
     }
-
     this.filteredLocationList = this.housingLocationList.filter(
       (housingLocation) =>
         housingLocation?.city.toLowerCase().includes(text.toLowerCase())
